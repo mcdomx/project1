@@ -5,6 +5,7 @@ from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
+
 app = Flask(__name__)
 
 # Check for environment variable
@@ -21,6 +22,10 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 
+
+
 @app.route("/")
 def index():
-    return "Project 1: TODO"
+    import requests, json
+    weather = requests.get("https://api.darksky.net/forecast/ff036cf3d154f83b55a5261f6a293109/42.37,-71.11").json()
+    return json.dumps(weather["currently"], indent = 2)
