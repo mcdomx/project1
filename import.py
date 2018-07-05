@@ -2,7 +2,8 @@
 
 import platform
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
+from sqlalchemy import Table, Column, Integer, Float, String, MetaData, ForeignKey, Sequence
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 engine = create_engine(os.getenv("DATABASE_URL"))
@@ -17,9 +18,8 @@ def main():
         while( True ):
             response=get_Y_or_N()
             if response is 'Y':
-                print("Deleting tables", end="")
                 delete_tables()
-                # setup_tables();
+                setup_tables();
                 # load_tables();
                 break
             elif response is 'N':
@@ -39,12 +39,54 @@ def get_Y_or_N():
 
 
 def delete_tables():
-    db.execute("DROP TABLE locations")
-    db.commit()
+    metadata = MetaData()
+    tables = ['locations', 'users', 'comments']
+    for table in tables:
+        selected_table = Table(table, metadata)
+        if selected_table.exists(engine):
+            selected_table.drop(engine)
+            print(f"..Table '{table}' deleted")
+        else:
+            print(f"..Table '{table}' does not exist")
+
+def setup_locations_table():
+    metadata = MetaData()
+    locations = Table('locations', metadata,
+        Column('zipcode', String, primary_key=True),
+        Column('city', String, nullable=False),
+        Column('state', String, nullable=False),
+        Column('lat', Float, nullable=False),
+        Column('long', Float, nullable=False),
+        Column('population', Integer, nullable=False)
+    )
+    metadata.create_all(engine)
+
+def setup_users_table():
+    metadata = MetaData()
+    locations = Table('users', metadata,
+        Column('user_id', String, primary_key=True),
+        Column('name', String, nullable=False),
+        Column('password', String, nullable=False)
+    )
+    metadata.create_all(engine)
+
+def setup_comments_table():
+    users_meta = MetaData()
+    user_table = Table('users', users_meta)
+    comments_meta = MetaData()
+    locations = Table('comments', comments_meta,
+        Column('comment_id', String, Sequence('seq', metadata=comments_meta), primary_key=True),
+        Column('user_id', String, ForeignKey(user_table.user_id), nullable=False),
+        Column('zipcode', String, nullable=False),
+        Column('date', DateTime, onupdate=datetime.datetime.now),
+        Column('comment', String, nullable=False)
+    )
+    metadata.create_all(engine)
 
 def setup_tables():
-    db.execute("CREATE TABLE locations {zipcode VARCHAR PRIMARY KEY, city VARCHAR NOT NULL, state VARCHAR NOT NULL, lat FLOAT NOT NULL, long FLOAT NOT NULL, population INTEGER NOT NULL}")
-    db.commit()
+    setup_locations_table()
+    setup_users_table()
+    setup_comments_table()
 
 def load_tables():
     import_CSV("zips.csv")
