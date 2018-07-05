@@ -2,6 +2,7 @@
 
 import platform
 import os
+import csv
 from sqlalchemy import create_engine, select
 from sqlalchemy import Table, Column, Integer, Float, String, MetaData, ForeignKey, Sequence
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -20,7 +21,7 @@ def main():
             if response is 'Y':
                 delete_tables()
                 setup_tables();
-                # load_tables();
+                load_tables();
                 break
             elif response is 'N':
                 print("Exiting program.")
@@ -40,76 +41,123 @@ def get_Y_or_N():
 
 def delete_tables():
     metadata = MetaData()
-    tables = ['locations', 'comments', 'users']
+    tables = ['tbl_comments', 'tbl_users', 'tbl_locations']
+    # tables = ['tbl_comments','tbl_users']
     for table in tables:
         selected_table = Table(table, metadata)
         if selected_table.exists(engine):
             selected_table.drop(engine)
-            print(f"..Table '{table}' deleted")
+            print(f"- Table '{table}' deleted")
         else:
-            print(f"..Table '{table}' does not exist")
-
-def setup_locations_table():
-    metadata = MetaData()
-    locations = Table('locations', metadata,
-        Column('zipcode', String, primary_key=True),
-        Column('city', String, nullable=False),
-        Column('state', String, nullable=False),
-        Column('lat', Float, nullable=False),
-        Column('long', Float, nullable=False),
-        Column('population', Integer, nullable=False)
-    )
-    metadata.create_all(engine)
-
-def setup_users_table():
-    metadata = MetaData()
-    locations = Table('users', metadata,
-        Column('user_id', String, primary_key=True),
-        Column('name', String, nullable=False),
-        Column('password', String, nullable=False)
-    )
-    metadata.create_all(engine)
-
-def setup_comments_tableX():
-    users_meta = MetaData()
-    user_table = Table('users', users_meta)
-    comments_meta = MetaData()
-    locations = Table('comments', comments_meta,
-        Column('comment_id', String, Sequence('seq', metadata=comments_meta), primary_key=True),
-        Column('user_id', String, ForeignKey(user_table.user_id), nullable=False),
-        Column('zipcode', String, nullable=False),
-        Column('date', DateTime, onupdate=datetime.datetime.now),
-        Column('comment', String, nullable=False)
-    )
-    metadata.create_all(engine)
-
-def setup_comments_table():
-    db.execute("CREATE TABLE comments (                         \
-        comment_id SERIAL PRIMARY KEY,                          \
-        user_id VARCHAR REFERENCES users,   \
-        zipcode INTEGER,                                        \
-        comment VARCHAR)")
-    db.commit()
+            print(f"Table '{table}' does not exist")
 
 def setup_tables():
     setup_locations_table()
     setup_users_table()
     setup_comments_table()
 
+def setup_locations_table():
+    metadata = MetaData()
+    locations = Table('tbl_locations', metadata,
+        Column('zipcode', String, primary_key=True),
+        Column('city', String, nullable=False),
+        Column('state', String, nullable=False),
+        Column('lat', Float, nullable=False),
+        Column('lon', Float, nullable=False),
+        Column('population', Integer, nullable=False)
+    )
+    metadata.create_all(engine)
+    print("+ Table 'tbl_locations' created.")
+
+def setup_users_table():
+    metadata = MetaData()
+    locations = Table('tbl_users', metadata,
+        Column('user_id', String, primary_key=True),
+        Column('name', String, nullable=False),
+        Column('password', String, nullable=False)
+    )
+    metadata.create_all(engine)
+    print("+ Table 'tbl_users' created.")
+
+def setup_comments_table():
+    db.execute("CREATE TABLE tbl_comments (                     \
+        comment_id SERIAL PRIMARY KEY,                          \
+        user_id VARCHAR REFERENCES tbl_users,                   \
+        zipcode VARCHAR REFERENCES tbl_locations,               \
+        comment VARCHAR)")
+    db.commit()
+    print("+ Table 'tbl_comments' created.")
+
 def load_tables():
-    import_CSV("zips.csv")
+    import_zips()
+    import_users()
+    import_comments()
 
-def import_CSV(csv_file="zips.csv"):
-    f = open(csv_file)
-    reader = csv.reader(f) #moduel csv will enable reading csv format. reader become object to iterate
-    # Skip first line of file
-    # loop through lines of the file and INSERT each one into locations tables
-    for z, c, s, lat, lon, pop in reader:
-        db.execute("INSERT INTO locations (z, c, s, la, lo. pop) VALUES (:Zipcode, :City, :State, :Lat, :Long, :Population)",
-            {"Zipcode":z, "City":c, "State":s, "Lat":la, "Long":lo, "Population":pop})
-        db.commit()
-    close(f)
+def import_zips(csv_file="zips.csv"):
+    f = open_file(csv_file)
+    if f is None:
+        return
+    reader = csv.reader(f)
+    i = 1
 
+    for zip, city, st, lat, lon, pop in reader:
+        if i>1:
+            print(f"\rLoading record: {i}", end="")
+            zip = str(zip)
+            if len(zip) is 4:
+                zip = "0"+zip
+            db.execute("INSERT INTO tbl_locations (zipcode, city, state, lat, lon, population) VALUES (:Zipcode, :City, :State, :Lat, :Lon, :Population)",
+                {"Zipcode":zip, "City":city, "State":st, "Lat":lat, "Lon":lon, "Population":pop})
+        i += 1
+    print("...Done")
+    print("Committing to database...")
+    db.commit()
+    print("Data committed.  Data load complete.")
+    f.close()
 
+def import_users(csv_file="users.csv"):
+    f = open_file(csv_file)
+    if f is None:
+        return
+    reader = csv.reader(f)
+    i = 1
+    for user, name, pw in reader:
+        if i>1:
+            print(f"\rLoading record: {i}", end="")
+            db.execute("INSERT INTO tbl_users (user_id, name, password) VALUES (:UID, :Name, :PW)",
+                {"UID":user, "Name":name, "PW":pw})
+        i += 1
+    print("...Done")
+    print("Committing to database...")
+    db.commit()
+    print("Data committed.  Data load complete.")
+    f.close()
+
+def import_comments(csv_file="comments.csv"):
+    f = open_file(csv_file)
+    if f is None:
+        return
+    reader = csv.reader(f)
+    i = 1
+    for user, zip, comment in reader:
+        if i>1:
+            print(f"\rLoading record: {i}", end="")
+            db.execute("INSERT INTO tbl_comments (comment_id, user_id, zipcode, comment) VALUES (:CID, :UID, :Zip, :Comment)",
+                {"CID":i , "UID":user, "Zip":zip, "Comment":comment})
+        i += 1
+    print("...Done")
+    print("Committing to database...")
+    db.commit()
+    print("Data committed.  Data load complete.")
+    f.close()
+
+def open_file(file_name):
+    f = open(file_name)
+    if f is None:
+        print(f"File '{csv_file}' not found.")
+        return None
+    else:
+        print(f"Loading data from {file_name}...")
+        return f
 
 if __name__ == '__main__': main()
