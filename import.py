@@ -1,50 +1,20 @@
 # This module will load data from zips.csv into the application's database
-# source file format:
-#   Zipcode,City,State,Lat,Long,Population (header line)
-#
 
-# database structures
-# weather locations
-CREATE TABLE locations {
-    zipcode VARCHAR PRIMARY KEY,
-    city VARCHAR NOT NULL,
-    state VARCHAR NOT NULL,
-    lat FLOAT NOT NULL,
-    lon FLOAT NOT NULL,
-    population INTEGER NOT NULL,
-}
+import platform
 
-# user
-CREATE TABLE users {
-    user_id VARCAHR PRIMARY KEY,
-    password VARCHAR
-}
+def main():
+        # Ask user for confirmation
+        # WARNING: all application table data will be erased
+        message("WARNING: All application's database tables will be erased.")
+        message("Confirm. Do you want to ERASE and recreate the application database.(Y/N)")
+        response = input()
+        if response is 'N':
+            exit(0)
+        # TODO: If tables exist, delete theme
+        # Run database_setup.psql
+        # Open zips.csv file
+        # Skip first line of file
+        # loop through lines of the file and INSERT each one into locations tables
+        # close file
 
-# comments
-CREATE TABLE comments {
-    comment_id SERIAL PRIMARY KEY,
-    user_id VARCAHR,
-    zipcode INTEGER,
-    comment VARCHAR
-}
-
-# inserting data into table
-INSERT INTO locations
-    (zipcode, city, state, lat, lon, population)
-    VALUES( , ' ', ' ', , , );
-
-INSERT INTO comments
-    (user_id, zipcode, comment)
-    VALUES('mcdomx', '02138', 'super nice place');
-
-# selecting data from Database
-SELECT * FROM locations; #selects all items from locations
-SELECT lot, lon FROM locations WHERE city = "Boston" OR zip = "02138";
-SELECT AVG(population) FROM locations WHERE lat > 45;
-SELECT COUNT(*) FROM locations WHERE city = "Springfield";
-SELECT * FROM locations WHERE city LIKE '%Spring%;' # '%' is wildcard
-
-# updating table data
-UPDATE comments
-    SET comment = 'really nice place'
-    WHERE comment_id = 1;
+if __name__ == '__main__': main()
