@@ -10,6 +10,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
+
 def main():
         # Ask user for confirmation
         # WARNING: all application table data will be erased
@@ -19,15 +20,29 @@ def main():
         while( True ):
             response=get_Y_or_N()
             if response is 'Y':
-                delete_tables()
-                setup_tables();
-                load_tables();
+                print("Include ERASE and RELOAD of the locations table? (Y/N)?", end="")
+                while( True ):
+                    response=get_Y_or_N()
+                    if response is 'Y':
+                        include_loc_table=True
+                        break
+                    elif response is 'N':
+                        include_loc_table=False
+                        break
+                    else:
+                        print("Respond with Y or N: ", end="")
+                delete_tables(include_loc_table)
+                setup_tables(include_loc_table);
+                load_tables(include_loc_table);
                 break
             elif response is 'N':
                 print("Exiting program.")
                 exit(0)
             else:
                 print("Respond with Y or N: ", end="")
+
+
+
 
 # get a Y or N response from command line
 # returns False if something else is typed
@@ -39,10 +54,12 @@ def get_Y_or_N():
         return False
 
 
-def delete_tables():
+def delete_tables(include_loc_table):
     metadata = MetaData()
-    tables = ['tbl_comments', 'tbl_users', 'tbl_locations']
-    # tables = ['tbl_comments','tbl_users']
+    if include_loc_table:
+        tables = ['tbl_comments', 'tbl_users', 'tbl_locations']
+    else:
+        tables = ['tbl_comments', 'tbl_users']
     for table in tables:
         selected_table = Table(table, metadata)
         if selected_table.exists(engine):
@@ -51,8 +68,9 @@ def delete_tables():
         else:
             print(f"Table '{table}' does not exist")
 
-def setup_tables():
-    setup_locations_table()
+def setup_tables(include_loc_table):
+    if include_loc_table:
+        setup_locations_table()
     setup_users_table()
     setup_comments_table()
 
@@ -88,8 +106,9 @@ def setup_comments_table():
     db.commit()
     print("+ Table 'tbl_comments' created.")
 
-def load_tables():
-    import_zips()
+def load_tables(include_loc_table):
+    if include_loc_table:
+        import_zips()
     import_users()
     import_comments()
 
@@ -142,8 +161,9 @@ def import_comments(csv_file="comments.csv"):
     for user, zip, comment in reader:
         if i>1:
             print(f"\rLoading record: {i}", end="")
-            db.execute("INSERT INTO tbl_comments (comment_id, user_id, zipcode, comment) VALUES (:CID, :UID, :Zip, :Comment)",
-                {"CID":i , "UID":user, "Zip":zip, "Comment":comment})
+            db.execute("INSERT INTO tbl_comments (user_id, zipcode, comment) \
+            VALUES (:UID, :Zip, :Comment)",
+                {"UID":user, "Zip":zip, "Comment":comment})
         i += 1
     print("...Done")
     print("Committing to database...")
