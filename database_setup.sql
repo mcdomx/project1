@@ -24,7 +24,7 @@ CREATE TABLE users {
 # comments table
 CREATE TABLE comments {
     comment_id SERIAL PRIMARY KEY,
-    user_id VARCAHR FOREIGN KEY REFERENCES users.user_id,
+    user_id VARCAHR REFERENCES users,
     zipcode INTEGER,
     comment VARCHAR
 }
