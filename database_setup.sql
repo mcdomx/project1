@@ -1,5 +1,5 @@
 # source file format:
-#   Zipcode,City,State,Lat,Long,Population (header line)
+#   Zipcode, City, State, Lat, Long, Population (header line)
 #
 
 # -----------------------------------------------------------
@@ -11,7 +11,7 @@ CREATE TABLE locations {
     city VARCHAR NOT NULL,
     state VARCHAR NOT NULL,
     lat FLOAT NOT NULL,
-    lon FLOAT NOT NULL,
+    long FLOAT NOT NULL,
     population INTEGER NOT NULL,
 }
 
