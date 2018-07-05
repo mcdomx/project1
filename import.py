@@ -40,7 +40,7 @@ def get_Y_or_N():
 
 def delete_tables():
     metadata = MetaData()
-    tables = ['locations', 'users', 'comments']
+    tables = ['locations', 'comments', 'users']
     for table in tables:
         selected_table = Table(table, metadata)
         if selected_table.exists(engine):
@@ -70,7 +70,7 @@ def setup_users_table():
     )
     metadata.create_all(engine)
 
-def setup_comments_table():
+def setup_comments_tableX():
     users_meta = MetaData()
     user_table = Table('users', users_meta)
     comments_meta = MetaData()
@@ -82,6 +82,14 @@ def setup_comments_table():
         Column('comment', String, nullable=False)
     )
     metadata.create_all(engine)
+
+def setup_comments_table():
+    db.execute("CREATE TABLE comments (                         \
+        comment_id SERIAL PRIMARY KEY,                          \
+        user_id VARCHAR REFERENCES users,   \
+        zipcode INTEGER,                                        \
+        comment VARCHAR)")
+    db.commit()
 
 def setup_tables():
     setup_locations_table()
