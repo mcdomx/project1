@@ -68,8 +68,17 @@ SELECT * FROM flights ORDER BY duration DESC LIMIT 5 -- top 5 longest flights
 -- groupings
 SELECT * FROM flights ORDER BY destination
 
+-- joining tables
+SELECT name, zipcode, comment FROM tbl_users JOIN tbl_comments ON tbl_comments.user_id=tbl_users.user_id WHERE tbl_users.name='Marni'
+-- LEFT JOIN, RIGHT JOIN, FULL OUTER JOIN
+
+-- indexing: increases speed of access
+
+
+
 locking database using SQL Transactions
 BEGIN
+
 COMMIT
 
 -- SQL Alchemy: python module that enables SQL Transactions
