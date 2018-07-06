@@ -53,6 +53,19 @@ def zip(zipcode):
         + "Time: " + datetime.datetime.fromtimestamp(w['time']).strftime('%c')
     return rv
 
-
 # use python hashlib or passlib to encrypt users Password
 # saitize password by escaping characters ' and "
+@app.route("/login", methods=["POST"])
+def book():
+
+    # get data from login form
+    user_id = str(request.form.get("user_id"))
+    pw = str(request.form.get("pw"))
+
+    # ensure user_id is not "user_id"
+    # ensure that user_id is not already taken
+    # ensure all fields are filled out
+    try:
+        flight_id = int(request.form.get("flight_id"))
+    except ValueError:
+        return render_template("error.html", message="Invalid flight number.")
