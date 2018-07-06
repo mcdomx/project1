@@ -30,11 +30,6 @@ db = scoped_session(sessionmaker(bind=engine))
 # site root
 @app.route("/")
 def index():
-    weather = requests.get("https://api.darksky.net/forecast/ff036cf3d154f83b55a5261f6a293109/42.37,-71.11").json()
-    w = weather['currently']
-    rv = "Temp: " + str(w['temperature']) + '\n'    \
-        + "Humidity: " + str(w['humidity']) + "\n"  \
-        + "Time: " + datetime.datetime.fromtimestamp(w['time']).strftime('%c')
     return render_template("index.html")
 
 # zipcode results
@@ -56,16 +51,55 @@ def zip(zipcode):
 # use python hashlib or passlib to encrypt users Password
 # saitize password by escaping characters ' and "
 @app.route("/login", methods=["POST"])
-def book():
-
+def login():
     # get data from login form
     user_id = str(request.form.get("user_id"))
-    pw = str(request.form.get("pw"))
+    pwd = str(request.form.get("pwd"))
 
+    #ensure both user_id and pw were provided
+    if user_id=="" or pwd=="":
+        #display message
+        return render_template("index.html")
+
+    if db.execute("SELECT * FROM tbl_users WHERE user_id = :id", {"id": user_id}).rowcount == 0:
+        # if user_id does not exist - give message and prepopulate fields
+        return render_template("index.html")
+
+
+    #
+    #
+    #
+    # if user_credentials:
+    #     # if the user_id already exists - login
+    #     if user_credentials[2] == pwd:
+    #         return render_template("login.html", user_id=user_id, pwd=pwd)
+    # else:
+    #
+
+@app.route("/register", methods=["POST"])
+def register(user_id, pwd):
+    #ensure both user_id and pw were provided
+    if user_id==None or pwd==None:
+        #display message
+        return render_template("login.html", user_id=user_id, pwd=pwd)
+    # ensure all fields are filled out
     # ensure user_id is not "user_id"
     # ensure that user_id is not already taken
-    # ensure all fields are filled out
-    try:
-        flight_id = int(request.form.get("flight_id"))
-    except ValueError:
-        return render_template("error.html", message="Invalid flight number.")
+    #update the login form to show pwd confirmation and get a __name__
+
+
+@app.route("/create_user", methods=["POST"])
+def create_user(user_id, name, pwd, pwd_conf):
+    #make sure that passwords match
+    if pwd is not pwd_conf:
+        #TODO display message
+        return render_template("register.html", user_id=user_id, pwd=pwd)
+
+    #add the user info to tbl_users
+
+
+
+    # try:
+    #     flight_id = int(request.form.get("flight_id"))
+    # except ValueError:
+    #     return render_template("error.html", message="Invalid flight number.")

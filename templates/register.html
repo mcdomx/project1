@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    ZipWeather - Register
+{% endblock %}
+
+{% block body %}
+      <!-- CONTAINER BODY_TEXT -->
+      <h5>Register</h5>
+      <p>Confirm password and enter name to register</p>
+      <div class="">
+        <form action="{{ url_for('create_user') }}" method="post">
+            <div class="form-inline form-group col-auto">
+              <input type="email" class="col-auto form-control-sm" name="user_id" placeholder="{{ user_id }}">
+              <input type= "text" class="col-auto form-control-sm" name="name" placeholder="your name">
+              <input type= "password" class="col-auto form-control-sm" name="pwd" placeholder="enter password">
+              <input type= "password" class="col-auto form-control-sm" name="pwd_conf" placeholder="re-enter password">
+              <button class="col-auto btn btn-primary">Register</button>
+            </div>
+        </form>
+      </div>
+      <!-- end CONTAINER BODY_TEXT -->
+{% endblock %}
