@@ -1,0 +1,74 @@
+/* BORDER BOX FIX */
+html {
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+/* END BORDER BOX FIX */
+a:hover {
+  color: orange;
+  text-decoration: none;
+}
+
+p {
+  text-align: justify;
+}
+
+div {
+  color: #ccddff;
+  background-color: #001133;
+}
+
+.table_data_cells {
+  height: 100px;
+}
+
+.body_text {
+  margin-top: 150px;
+  margin-left: 10px;
+  margin-right: 30px;
+  margin-bottom: 100px;
+}
+
+/* settings for mobile devices where the width is 767px or less*/
+@media (max-width: 767px) {
+  .body_text {
+    margin-top: 75px;
+  }
+}
+table th, table td {
+  padding: 10px;
+  border: 1px solid black;
+}
+
+table {
+  border-collapse: collapse;
+}
+table td {
+  vertical-align: top;
+}
+table th {
+  vertical-align: bottom;
+  padding-bottom: 5px;
+  background-color: grey;
+}
+
+header, footer {
+  padding: 15px 15px 50px 15px;
+  color: #ccddff;
+  background-color: #001133;
+}
+
+footer {
+  height: 6vh;
+}
+
+header {
+  font-size: 1.5em;
+  height: 3vh;
+}
+
+/*# sourceMappingURL=CSS_project1.css.map */
