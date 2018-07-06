@@ -7,9 +7,12 @@ from sqlalchemy import create_engine, select
 from sqlalchemy import Table, Column, Integer, Float, String, MetaData, ForeignKey, Sequence
 from sqlalchemy.orm import scoped_session, sessionmaker
 
+# Check for environment variable
+if not os.getenv("DATABASE_URL"):
+    raise RuntimeError("DATABASE_URL is not set")
+
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
-
 
 def main():
         # Ask user for confirmation
@@ -125,7 +128,8 @@ def import_zips(csv_file="zips.csv"):
             zip = str(zip)
             if len(zip) is 4:
                 zip = "0"+zip
-            db.execute("INSERT INTO tbl_locations (zipcode, city, state, lat, lon, population) VALUES (:Zipcode, :City, :State, :Lat, :Lon, :Population)",
+            db.execute("INSERT INTO tbl_locations (zipcode, city, state, lat, lon, population) \
+            VALUES (:Zipcode, :City, :State, :Lat, :Lon, :Population)",
                 {"Zipcode":zip, "City":city, "State":st, "Lat":lat, "Lon":lon, "Population":pop})
         i += 1
     print("...Done")
@@ -143,7 +147,8 @@ def import_users(csv_file="users.csv"):
     for user, name, pw in reader:
         if i>1:
             print(f"\rLoading record: {i}", end="")
-            db.execute("INSERT INTO tbl_users (user_id, name, password) VALUES (:UID, :Name, :PW)",
+            db.execute("INSERT INTO tbl_users (user_id, name, password) \
+            VALUES (:UID, :Name, :PW)",
                 {"UID":user, "Name":name, "PW":pw})
         i += 1
     print("...Done")
