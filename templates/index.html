@@ -4,20 +4,48 @@
     ZipWeather
 {% endblock %}
 
+
+{% if user_id is defined %}
+
+{% else %}
+  user_id="enter email" >
+{% endif %}
+
+{% if pwd is defined %}
+  id_pwd=pwd
+{% else %}
+  id_pwd="enter password"
+{% endif %}
+
+
 {% block body %}
       <!-- CONTAINER BODY_TEXT -->
+      {% if user_name is defined() %}
+      {% else %}
 
-      <div class="container col-4">
-        <h5>Login</h5>
-        <p>Login for full features</p>
+        <div class="container col-4" id="loginwindow">
+          <h5>Login</h5>
+          <p>Login for full features</p>
 
-        <form action="{{ url_for('login') }}" method="post" >
-            <div class="form-group">
-              <input type="email" class="form-row col-auto form-control-sm" name="user_id" placeholder="enter email">
-              <input type= "password" class="form-row col-auto form-control-sm" name="pwd" placeholder="password">
-              <button class="col-auto btn btn-primary">Login</button>
-            </div>
-        </form>
-      </div> <!-- end container -->
+          <form action="{{ url_for('login') }}" method="post" >
+              <div class="form-group">
+
+                <input type="email" class="form-row col-auto form-control-sm" name="user_id" placeholder= "enter email">
+                <input type= "password" class="form-row col-auto form-control-sm" name="pwd" placeholder= "enter password">
+                <button class="col-auto btn btn-primary">Login</button>
+              </div>
+          </form>
+          <a href="register.html">Register</a>
+        </div> <!-- end container -->
+
+        {% if message is defined() %}
+          <p></p>
+          <div class="alert alert-warning col-6 mx-auto" role="alert">
+            {{ message }}
+          </div>
+        {% endif %}
+
+      {% endif %}
+
       <!-- end CONTAINER BODY_TEXT -->
 {% endblock %}

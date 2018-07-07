@@ -1,12 +1,58 @@
 //SASS SCSS Color Variables
 $lightblue: #ccddff;
 $darkblue: #001133;
+$platinum: #E2EFDE;
 
 $color_background: $darkblue;
 $color_font: $lightblue;
+$color_background_login: $platinum;
 //END SASS CSCC Color Varaibles
 
+
+//HEADER FOOTER Inheritance
+
+%header_footer_size {
+  padding: 15px 15px 50px 15px;
+  color: $color_font;
+  background-color: $color_background;
+}
+
+footer {
+  @extend %header_footer_size;
+  height: 6vh;
+}
+
+header {
+  @extend %header_footer_size;
+  font-size: 1.5em;
+  height: 3vh;
+}
+
+//END HEADER AND FOOTER
+
+.container {
+
+}
+
+//Creates margins between specifc form elements
+input[type=email], input[type=password]{
+  margin-bottom: 5px;
+ }
+
+#loginwindow {
+  padding: 15px 15px 15px 15px;
+  background-color: $color_background_login;
+}
+
+
+
+
 a:hover {
-  color: white;
+  color: orange;
   text-decoration: none;
+}
+
+
+p {
+  text-align: justify;
 }

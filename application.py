@@ -8,6 +8,7 @@ from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
+
 app = Flask(__name__)
 darksky_key = "ff036cf3d154f83b55a5261f6a293109"
 
@@ -58,23 +59,22 @@ def login():
 
     #ensure both user_id and pw were provided
     if user_id=="" or pwd=="":
-        #display message
-        return render_template("index.html")
-
-    if db.execute("SELECT * FROM tbl_users WHERE user_id = :id", {"id": user_id}).rowcount == 0:
-        # if user_id does not exist - give message and prepopulate fields
-        return render_template("index.html")
+        #TODO display message
+        return render_template("index.html", message="enter a user name and password", user_id=user_id, pwd=pwd)
 
 
-    #
-    #
-    #
-    # if user_credentials:
-    #     # if the user_id already exists - login
-    #     if user_credentials[2] == pwd:
-    #         return render_template("login.html", user_id=user_id, pwd=pwd)
-    # else:
-    #
+
+    if db.execute("SELECT * FROM tbl_users WHERE user_id=:id", {"id": user_id}).rowcount is not 0:
+        # user exists - check passworsd
+        user_credentials = db.execute("SELECT * FROM tbl_users WHERE user_id=:id", {"id": user_id}).fetchone()
+        if pwd == user_credentials[2]:
+            return render_template("index.html", message="login successful", user_name=user_credentials[1], user_id=user_id, pwd=pwd)
+        else:
+            return render_template("index.html", message="password incorrect", user_id=user_id, pwd=pwd)
+    else:
+        return render_template("login.html", message="no such user", user_id=user_id)
+
+
 
 @app.route("/register", methods=["POST"])
 def register(user_id, pwd):

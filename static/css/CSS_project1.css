@@ -1,6 +1,34 @@
+header, footer {
+  padding: 15px 15px 50px 15px;
+  color: #ccddff;
+  background-color: #001133;
+}
+
+footer {
+  height: 6vh;
+}
+
+header {
+  font-size: 1.5em;
+  height: 3vh;
+}
+
+input[type=email], input[type=password] {
+  margin-bottom: 5px;
+}
+
+#loginwindow {
+  padding: 15px 15px 15px 15px;
+  background-color: #E2EFDE;
+}
+
 a:hover {
-  color: white;
+  color: orange;
   text-decoration: none;
+}
+
+p {
+  text-align: justify;
 }
 
 /*# sourceMappingURL=CSS_project1.css.map */
