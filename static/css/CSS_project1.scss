@@ -2,84 +2,11 @@
 $lightblue: #ccddff;
 $darkblue: #001133;
 
-$color-menu_background: $darkblue;
-$color-menu_font: $lightblue;
+$color_background: $darkblue;
+$color_font: $lightblue;
 //END SASS CSCC Color Varaibles
 
-
-/* BORDER BOX FIX */
-html { box-sizing: border-box; }
-*, *::before, *::after { box-sizing: inherit; }
-/* END BORDER BOX FIX */
-
-
 a:hover {
-  color: orange;
+  color: white;
   text-decoration: none;
-}
-
-p {
-  text-align: justify;
-}
-
-
-.table_data_cells {
-  height: 100px;
-}
-
-
-/* settings for mobile devices where the width is 767px or less*/
-@media (max-width: 767px) {
-  .body_text {
-    margin-top: 75px;
-  }
-}
-
-//Table nesting
-%table_cells {
-  padding: 10px;
-  border: 1px solid black;
-}
-
-table {
-  border-collapse: collapse;
-
-  td {
-    @extend %table_cells;
-    vertical-align: top;
-  }
-
-  th {
-    @extend %table_cells;
-    vertical-align: bottom;
-    padding-bottom: 5px;
-    background-color: grey;
-  }
-} // end table
-
-
-//HEADER FOOTER Inheritance
-%color_scheme {
-  color: $color-menu_font;
-  background-color: $color-menu_background;
-}
-
-.color_scheme {
-  @extend %color_scheme;
-}
-
-%header_footer_size {
-  padding: 15px 15px 50px 15px;
-  @extend %color_scheme;
-}
-
-footer {
-  @extend %header_footer_size;
-  height: 6vh;
-}
-
-header {
-  @extend %header_footer_size;
-  font-size: 1.5em;
-  height: 3vh;
 }
