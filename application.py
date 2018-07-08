@@ -68,11 +68,22 @@ def login():
         # user exists - check passworsd
         user_credentials = db.execute("SELECT * FROM tbl_users WHERE user_id=:id", {"id": user_id}).fetchone()
         if pwd == user_credentials[2]:
-            return render_template("index.html", message="login successful", user_name=user_credentials[1], user_id=user_id, pwd=pwd)
+            # password matches - login user
+            session["user_id"] = user_credentials[0]
+            session["user_name"] = user_credentials[1]
+            return render_template("index.html", message="login successful", user_name=session["user_name"], user_id=session["user_name"])
         else:
             return render_template("index.html", message="password incorrect", user_id=user_id, pwd=pwd)
     else:
         return render_template("login.html", message="no such user", user_id=user_id)
+
+
+
+@app.route("/")
+def logout():
+    session.pop("user_name", None)
+    session.pop("user_id", None)
+    render_template("index.html")
 
 
 

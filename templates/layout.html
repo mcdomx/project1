@@ -18,7 +18,10 @@
     <header class="row justify-content-center fixed-top">
       <section class="col-6"><a href="index.html">Home</a></section>
       {% if user_name is defined() %}
-        <section class="col-5" align="right">Logged in as: {{ user_name }}</section>
+        <section class="col-5" align="right">
+          Logged in as: {{ user_name }}
+          <a href="{{ url_for('logout') }}">[Logout]</a>
+        </section>
       {% else %}
         <section class="col-5" align="right">right aligned header text</section>
       {% endif %}
