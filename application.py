@@ -32,16 +32,21 @@ db = scoped_session(sessionmaker(bind=engine))
 # site root
 @app.route("/")
 def index():
-    return render_template("index.html")
+    # if no user is logged in, present user with login
+    # if user is logged in already, present user with seach
+    if session.get("user_session") is None:
+        return render_template("index.html")
+    else:
+        return render_template("search.html", message="search for weather", user_session=session["user_session"])
 
 # zipcode results
-@app.route("/weather/<string:zipcode>")
-def zip(zipcode):
-    lat_lon = db.execute("SELECT lat,lon FROM tbl_locations WHERE zipcode=zipcode").fetchone()
+@app.route("/weather/<string:zip>")
+def get_weather(zip):
+    lat_lon = db.execute("SELECT lat,lon FROM tbl_locations WHERE zipcode=:zip", {"zip": zip}).fetchone()
     get_weather = "https://api.darksky.net/forecast/" + darksky_key + "/" + str(lat_lon[0]) + "," + str(lat_lon[1])
     weather = requests.get(get_weather).json()
     w = weather['currently']
-    rv = "Zip: " + str(zipcode) + '\n'                  \
+    rv = "Zip: " + str(zip) + '\n'                  \
         + "Lat: " + str(lat_lon[0]) + '\n'              \
         + "Lon: " + str(lat_lon[1]) + '\n'              \
         + "Temp: " + str(w['temperature']) + '\n'       \
@@ -54,8 +59,7 @@ def zip(zipcode):
 # sanitize password by escaping characters ' and "
 @app.route("/", methods=["POST"])
 def login():
-    if session.get("user_session") is None:
-        session["user_session"] = []
+
 
     # get data from login form
     user_id = str(request.form.get("user_id"))
@@ -72,13 +76,15 @@ def login():
         user_credentials = db.execute("SELECT * FROM tbl_users WHERE user_id=:id", {"id": user_id}).fetchone()
         if pwd == user_credentials[2]:
             # password matches - login user
+            if session.get("user_session") is None:
+                session["user_session"] = []
             session["user_session"].append(user_credentials[0])
             session["user_session"].append(user_credentials[1])
-            return render_template("index.html", message="login successful", user_session=session["user_session"])
+            return render_template("search.html", message="login successful", user_session=session["user_session"])
         else:
             return render_template("index.html", message="password incorrect", user_id=user_id, pwd=pwd)
     else:
-        return render_template("login.html", message="no such user", user_id=user_id)
+        return render_template("index.html", message="No user: " + user_id)
 
 
 # LOGOUT
@@ -125,12 +131,34 @@ def add_user(user_id, user_name, pwd):
     db.commit()
 
 
+@app.route("/search_result", methods=["POST"])
+def search_result():
+    search_value = str(request.form.get("location_input")).upper()
 
+    if search_value == "":
+        return render_template("search.html", message="enter a zip or town to search for")
 
+    # result_rows = db.execute("SELECT * FROM tbl_locations WHERE zipcode=:zip", {"zip": search_value}).rowcount
 
+    # result_count = db.execute("SELECT * FROM tbl_locations WHERE zipcode LIKE :zip", {"zip": "%" + search_value + "%" }).rowcount
+    search_results = db.execute("SELECT * FROM tbl_locations WHERE zipcode LIKE :zip", {"zip": "%" + search_value + "%" }).fetchall()
+    result_count = len(search_results)
 
-    #add the user info to tbl_users
+    # if no matches in the zip code field are found, check the city name
+    if result_count==0:
+        # result_count = db.execute("SELECT * FROM tbl_locations WHERE city LIKE :city", {"city": "%" + search_value + "%" }).rowcount
+        search_results = db.execute("SELECT * FROM tbl_locations WHERE city LIKE :city", {"city": "%" + search_value + "%" }).fetchall()
+        result_count = len(search_results)
 
+    if result_count==0:
+        # no results found
+        return render_template("search.html", message="no results found for: " + search_value, result_count=result_count, search_results=search_results)
+    elif result_count==1:
+        # go straigh to weather page
+        return render_template("search.html", message="found result for: " + search_value, result_count=result_count, search_results=search_results)
+    else:
+        # multiple results found - show a list of results
+        return render_template("search.html", message="found result for: " + search_value, result_count=result_count, search_results=search_results)
 
 
     # try:

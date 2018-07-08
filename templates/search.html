@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    ZipWeather - Search
+{% endblock %}
+
+{% block body %}
+
+{% if message is defined() %}
+  <p></p>
+  <div class="alert alert-warning col-6 mx-auto" role="alert">
+    {{ message }}
+  </div>
+{% endif %}
+
+<!-- CONTAINER BODY_TEXT -->
+<div class="container col-4" id="loginwindow">
+  <h5>Search</h5>
+  <p>enter zipcode, city or town</p>
+
+    <form action="{{ url_for('search_result') }}" method="post">
+        <div class="form-group">
+            <input type="text" class="form-row col-auto form-control-sm" name="location_input" placeholder= "zip or city">
+            <button class="col-auto btn btn-primary">Search</button>
+          </div>
+      </form>
+</div> <!-- end CONTAINER -->
+
+<!-- if the search resulted in something then dislpay a list with linkable weather -->
+{% if result_count is defined() and result_count > 0 %}
+  <p></p>
+  <table class="table table-striped">
+      <thead>
+          <th scope="col">City</th>
+          <th scope="col">State</th>
+          <th scope="col">Zip</th>
+          <th scope="col">Weather</th>
+      </thead>
+      <tbody>
+        {% for row in search_results %}
+        <tr>
+            <th scope="row">{{ row.city }}</th>
+            <td>{{ row.state }}</td>
+            <td>{{ row.zipcode }}</td>
+            <td><a href="{{ url_for('get_weather', zip=row.zipcode) }}" class="btn btn-info" role="button">Current Weather</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+
+{% endif %}
+
+
+</table>
+
+
+<!-- end CONTAINER BODY_TEXT -->
+
+{% endblock %}
