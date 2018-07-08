@@ -20,7 +20,7 @@
 
 {% block body %}
       <!-- CONTAINER BODY_TEXT -->
-      {% if user_name is defined() %}
+      {% if user_session is defined() %}
       {% else %}
 
         <div class="container col-4" id="loginwindow">
@@ -35,16 +35,16 @@
                 <button class="col-auto btn btn-primary">Login</button>
               </div>
           </form>
-          <a href="register.html">Register</a>
+          <a href="{{ url_for('register') }}">Register</a>
         </div> <!-- end container -->
 
-        {% if message is defined() %}
-          <p></p>
-          <div class="alert alert-warning col-6 mx-auto" role="alert">
-            {{ message }}
-          </div>
-        {% endif %}
+      {% endif %}
 
+      {% if message is defined() %}
+        <p></p>
+        <div class="alert alert-warning col-6 mx-auto" role="alert">
+          {{ message }}
+        </div>
       {% endif %}
 
       <!-- end CONTAINER BODY_TEXT -->

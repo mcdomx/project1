@@ -28,13 +28,17 @@ Session(app)
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
+
+
 # site root
 @app.route("/")
 def index():
+    if session.get("user_session") is None:
+        session["user_session"] = []
     return render_template("index.html")
 
 # zipcode results
-@app.route("/<string:zipcode>")
+@app.route("/weather/<string:zipcode>")
 def zip(zipcode):
     lat_lon = db.execute("SELECT lat,lon FROM tbl_locations WHERE zipcode=zipcode").fetchone()
     get_weather = "https://api.darksky.net/forecast/" + darksky_key + "/" + str(lat_lon[0]) + "," + str(lat_lon[1])
@@ -50,8 +54,8 @@ def zip(zipcode):
     return rv
 
 # use python hashlib or passlib to encrypt users Password
-# saitize password by escaping characters ' and "
-@app.route("/login", methods=["POST"])
+# sanitize password by escaping characters ' and "
+@app.route("/", methods=["POST"])
 def login():
     # get data from login form
     user_id = str(request.form.get("user_id"))
@@ -63,36 +67,32 @@ def login():
         return render_template("index.html", message="enter a user name and password", user_id=user_id, pwd=pwd)
 
 
-
     if db.execute("SELECT * FROM tbl_users WHERE user_id=:id", {"id": user_id}).rowcount is not 0:
         # user exists - check passworsd
         user_credentials = db.execute("SELECT * FROM tbl_users WHERE user_id=:id", {"id": user_id}).fetchone()
         if pwd == user_credentials[2]:
             # password matches - login user
-            session["user_id"] = user_credentials[0]
-            session["user_name"] = user_credentials[1]
-            return render_template("index.html", message="login successful", user_name=session["user_name"], user_id=session["user_name"])
+            session["user_session"].append(user_credentials[0])
+            session["user_session"].append(user_credentials[1])
+            return render_template("index.html", message="login successful", user_session=session["user_session"])
         else:
             return render_template("index.html", message="password incorrect", user_id=user_id, pwd=pwd)
     else:
         return render_template("login.html", message="no such user", user_id=user_id)
 
 
-
+# LOGOUT
 @app.route("/")
 def logout():
-    session.pop("user_name", None)
-    session.pop("user_id", None)
-    render_template("index.html")
+    popper = 1
+    # sess_pop = session.pop("user_session", None)
+    # render_template("index.html", message="Successfully logged out.", user_session=sess_pop)
 
 
 
-@app.route("/register", methods=["POST"])
-def register(user_id, pwd):
-    #ensure both user_id and pw were provided
-    if user_id==None or pwd==None:
-        #display message
-        return render_template("login.html", user_id=user_id, pwd=pwd)
+@app.route("/register")
+def register():
+    return render_template("register.html")
     # ensure all fields are filled out
     # ensure user_id is not "user_id"
     # ensure that user_id is not already taken
@@ -100,11 +100,35 @@ def register(user_id, pwd):
 
 
 @app.route("/create_user", methods=["POST"])
-def create_user(user_id, name, pwd, pwd_conf):
-    #make sure that passwords match
-    if pwd is not pwd_conf:
-        #TODO display message
-        return render_template("register.html", user_id=user_id, pwd=pwd)
+def create_user():
+    # get data from login form
+    user_id = str(request.form.get("user_id"))
+    user_name = str(request.form.get("user_name"))
+    pwd = str(request.form.get("pwd"))
+    pwd_conf = str(request.form.get("pwd_conf"))
+
+    #if any field is not filled in, re-display form with message
+    if user_id=="" or user_name=="" or pwd=="" or pwd_conf=="":
+        message = "Fill in all fields"
+        return render_template("register.html", message=message)
+    elif pwd != pwd_conf:
+        #make sure that passwords match
+        message = "Password does not match."
+        return render_template("register.html", message=message)
+    else:
+        add_user(user_id, user_name, pwd)
+        return render_template("registration_success.html", user_id=user_id, user_name=user_name)
+
+# add user into database
+def add_user(user_id, user_name, pwd):
+    db.execute("INSERT INTO tbl_users VALUES (:user_id, :user_name, :pwd)",
+    {"user_id": user_id, "user_name": user_name, "pwd": pwd})
+    db.commit()
+
+
+
+
+
 
     #add the user info to tbl_users
 
