@@ -20,7 +20,7 @@
 
 {% block body %}
       <!-- CONTAINER BODY_TEXT -->
-      {% if user_session is defined() %}
+      {% if session["user_session"] is defined() %}
       {% else %}
 
         <div class="container col-4" id="loginwindow">

@@ -29,12 +29,9 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 
-
 # site root
 @app.route("/")
 def index():
-    if session.get("user_session") is None:
-        session["user_session"] = []
     return render_template("index.html")
 
 # zipcode results
@@ -57,6 +54,9 @@ def zip(zipcode):
 # sanitize password by escaping characters ' and "
 @app.route("/", methods=["POST"])
 def login():
+    if session.get("user_session") is None:
+        session["user_session"] = []
+
     # get data from login form
     user_id = str(request.form.get("user_id"))
     pwd = str(request.form.get("pwd"))
@@ -82,11 +82,10 @@ def login():
 
 
 # LOGOUT
-@app.route("/")
+@app.route("/logout")
 def logout():
-    popper = 1
-    # sess_pop = session.pop("user_session", None)
-    # render_template("index.html", message="Successfully logged out.", user_session=sess_pop)
+    session.pop("user_session", None)
+    return render_template("index.html", message="Successfully logged out.")
 
 
 

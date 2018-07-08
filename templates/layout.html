@@ -16,10 +16,10 @@
 
     <!-- HEADER -->
     <header class="row justify-content-center fixed-top">
-      <section class="col-6"><a href="index.html">Home</a></section>
-      {% if user_session is defined() %}
+      <section class="col-6"><a href="{{ url_for('index') }}">Home</a></section>
+      {% if session["user_session"] is defined() %}
         <section class="col-5" align="right">
-          Welcome, {{ user_session[1] }}!
+          Welcome, {{ session["user_session"][0] }}!
           <a href="{{ url_for('logout') }}">[Logout]</a>
         </section>
       {% else %}
