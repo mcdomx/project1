@@ -1,4 +1,4 @@
-user_id,zipcode,comment
-mimi@me.com,02138,really nice
-jinglebells@me.com,02138,great things going on here
-snowman@me.com,02138,hi everyone
+date,user_id,zipcode,comment
+2018-05-10,mimi@me.com,02138,really nice
+2018-06-20,jinglebells@me.com,02138,great things going on here
+2018-07-06,snowman@me.com,02138,hi everyone

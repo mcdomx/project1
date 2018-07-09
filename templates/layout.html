@@ -19,7 +19,7 @@
       <section class="col-6"><a href="{{ url_for('index') }}">Home</a></section>
       {% if session["user_session"] is defined() %}
         <section class="col-5" align="right">
-          Welcome, {{ session["user_session"][0] }}!
+          Welcome, {{ session["user_session"][1] }}!
           <a href="{{ url_for('logout') }}">[Logout]</a>
         </section>
       {% else %}
@@ -45,7 +45,9 @@
     <!-- FOOTER -->
     <footer class="row justify-content-center fixed-bottom">
       <section class="col-6">this is the footer text</section>
-      <section class="col-5" align="right">right aligned footer text</section>
+      <section class="col-5" align="right">
+        <a href="https://darksky.net/poweredby/">Powered by Dark Sky</a>
+      </section>
     </footer>
     <!-- end FOOTER -->
   </body>

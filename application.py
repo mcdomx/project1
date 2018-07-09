@@ -46,7 +46,8 @@ def get_weather(zip):
     get_weather = "https://api.darksky.net/forecast/" + darksky_key + "/" + str(loc_info["lat"]) + "," + str(loc_info["lon"])
     weather = requests.get(get_weather).json()
     weather = weather['currently']
-    loc_comments = db.execute("SELECT * FROM tbl_comments WHERE zipcode=:zip", {"zip": zip}).fetchone()
+    # loc_comments = db.execute("SELECT * FROM tbl_comments WHERE zipcode=:zip", {"zip": zip}).fetchall()
+    loc_comments = db.execute("SELECT * FROM tbl_comments JOIN tbl_users ON tbl_comments.user_id=tbl_users.user_id WHERE zipcode=:zip ORDER BY tbl_comments.cmt_date DESC", {"zip": zip}).fetchall()
     # rv = "Zip: " + str(zip) + '\n'                  \
     #     + "Lat: " + str(lat_lon[0]) + '\n'              \
     #     + "Lon: " + str(lat_lon[1]) + '\n'              \
@@ -55,6 +56,16 @@ def get_weather(zip):
     #     + "Wind Speed: " + str(w['windSpeed']) + "\n"   \
     #     + "Time: " + datetime.datetime.fromtimestamp(w['time']).strftime('%c')
     return render_template("location.html", weather=weather, loc_info=loc_info, loc_comments=loc_comments)
+
+@app.route("/weather/<string:zip>", methods=["POST"])
+def add_comment(zip):
+    new_comment = str(request.form.get("new_comment"))
+    db.execute("INSERT INTO tbl_comments (cmt_date, user_id, zipcode, comment) \
+    VALUES (:cmt_date, :UID, :Zip, :Comment)",
+        {"cmt_date":datetime.datetime.now(), "UID":session["user_session"][0], "Zip":zip, "Comment":new_comment})
+    db.commit()
+    
+    return get_weather(zip)
 
 # use python hashlib or passlib to encrypt users Password
 # sanitize password by escaping characters ' and "
@@ -149,11 +160,13 @@ def search_result():
         # no results found
         return render_template("search.html", message="no results found for: " + search_value, result_count=result_count, search_results=search_results)
     elif result_count==1:
-        # go straigh to weather page
-        return render_template("search.html", message="found result for: " + search_value, result_count=result_count, search_results=search_results)
+        # go straight to weather page
+        return render_template("search.html", zipcode="found result for: " + search_value, result_count=result_count, search_results=search_results)
     else:
         # multiple results found - show a list of results
         return render_template("search.html", message="found result for: " + search_value, result_count=result_count, search_results=search_results)
+
+
 
 
     # try:

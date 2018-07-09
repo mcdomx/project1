@@ -3,6 +3,7 @@
 import platform
 import os
 import csv
+import datetime
 from sqlalchemy import create_engine, select
 from sqlalchemy import Table, Column, Integer, Float, String, MetaData, ForeignKey, Sequence
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -103,6 +104,7 @@ def setup_users_table():
 def setup_comments_table():
     db.execute("CREATE TABLE tbl_comments (                     \
         comment_id SERIAL PRIMARY KEY,                          \
+        cmt_date DATE,                                          \
         user_id VARCHAR REFERENCES tbl_users,                   \
         zipcode VARCHAR REFERENCES tbl_locations,               \
         comment VARCHAR)")
@@ -163,12 +165,12 @@ def import_comments(csv_file="comments.csv"):
         return
     reader = csv.reader(f)
     i = 1
-    for user, zip, comment in reader:
+    for cmt_date, user, zip, comment in reader:
         if i>1:
             print(f"\rLoading record: {i}", end="")
-            db.execute("INSERT INTO tbl_comments (user_id, zipcode, comment) \
-            VALUES (:UID, :Zip, :Comment)",
-                {"UID":user, "Zip":zip, "Comment":comment})
+            db.execute("INSERT INTO tbl_comments (cmt_date, user_id, zipcode, comment) \
+            VALUES (:cmt_date, :UID, :Zip, :Comment)",
+                {"cmt_date":cmt_date, "UID":user, "Zip":zip, "Comment":comment})
         i += 1
     print("...Done")
     print("Committing to database...")

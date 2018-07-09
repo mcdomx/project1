@@ -27,44 +27,66 @@
       </form>
 </div> <!-- end CONTAINER -->
 
+<p></p>
 
-<div class="container"> <!-- page body container -->
+<div class="container"> <!-- Location and Weather Container -->
+  <div class="row"> <!-- Location and Weather Row -->
 
-  <div class"row"> <!-- Location and Weather Row -->
-
-    <div class="container col-6"> <!-- Location Info -->
-      City: {{ loc_info.city }}
+    <div class="col-sm"> <!-- Location Info -->
+      City: {{ loc_info.city.capitalize() }}, {{ loc_info.state }} <br>
+      ZIP: {{ loc_info.zipcode }} <br>
+      Lat: {{ loc_info.lat }} <br>
+      Lon: {{ loc_info.lon }} <br>
+      Population: {{ loc_info.population }}
     </div> <!-- end location container -->
 
-    <div class="container col-6"> <!-- Weather Info -->
-      Current Temp: {{ weather.temperature }}
-      <a href="https://darksky.net/poweredby/">Powered by Dark Sky</a>
+    <div class="col-sm"> <!-- Weather Info -->
+      Summary: {{ weather.summary }} <br>
+      Icon: {{ weather.icon }} <br>
+      Current Temp: {{ weather.temperature }} <br>
+      Feels like: {{ weather.apparentTemperature }} <br>
+      Humidity: {{ weather.humidity }} <br>
+      Wind Speed: {{ weather.windSpeed }} <br>
+      Cloud Cover: {{ weather.cloudCover }}
     </div> <!-- end weather container -->
 
-  </div> <!-- end location and weather row -->
+  </div> <!-- Location and Weather Row -->
+</div> <!-- Location and Weather Container -->
 
-  <div class"row"> <!-- Checkins Row -->
-    <div class="container col-12">
-      <p></p>
-      <table class="table table-striped">
-          <thead>
-              <th scope="col">Date</th>
-              <th scope="col">User</th>
-              <th scope="col">Comment</th>
-          </thead>
-          <tbody>
-            {% for location in search_results %}
-            <tr>
-                <th scope="row">{{ comment.user_id }}</th>
-                <td>{{ comment.user_id }}</td>
-                <td>{{ comment.comment }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
+<p></p>
 
-    </div> <!-- end checkins container -->
+<div class="row container mx-auto"> <!-- Checkins Row -->
 
-  </div>  <!-- end checkins row -->
+  <table class="table table-striped">
+      <thead>
+          <th scope="col">Date</th>
+          <th scope="col">User</th>
+          <th scope="col">Comment</th>
+      </thead>
+      <tbody>
+        <tr>
+          <td>add comment .... </td>
+          <td>{{ session["user_session"][1] }}</td>
+          <td>
+            <form action="{{ url_for('add_comment', zip=loc_info.zipcode) }}" method="post">
+                <div class="form-group row">
+                  <input type="text" class="form-row form-control-sm" name="new_comment" placeholder= "..  add your comment here ..">
+                  <button class="form-row btn btn-primary">Add</button>
+            </form>
+          </td>
+        </tr>
+        {% for comment in loc_comments %}
+        <tr>
+            <td>{{ comment.cmt_date }}</td>
+            <td>{{ comment.name }}</td>
+            <td>{{ comment.comment }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+
+</div> <!-- end checkins container and row -->
+
 
 
 <!-- end CONTAINER BODY_TEXT -->
