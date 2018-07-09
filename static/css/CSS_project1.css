@@ -1,7 +1,9 @@
+/* Coolors Exported Palette - coolors.co/3d348b-7678ed-f7b801-f18701-f35b04 */
+/* RGB */
 header, footer {
   padding: 15px 15px 50px 15px;
-  color: #ccddff;
-  background-color: #001133;
+  color: #D7FDEC;
+  background-color: #81C1A6;
 }
 
 footer {
@@ -18,8 +20,23 @@ input[type=email], input[type=password], input[type=text] {
 }
 
 #loginwindow {
+  padding: 10px 15px 5px;
+  background-color: #81C1A6;
+}
+
+#searchwindow {
   padding: 15px 15px 15px 15px;
-  background-color: #E2EFDE;
+  background-color: #81C1A6;
+}
+
+#locwindow {
+  padding: 15px 15px 15px 15px;
+  background-color: #E2D3C5;
+}
+
+#weatherwindow {
+  padding: 15px 15px 15px 15px;
+  background-color: #BFB7CC;
 }
 
 a:hover {

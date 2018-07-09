@@ -3,11 +3,11 @@ import passlib
 import datetime
 import requests, json
 
+
 from flask import Flask, session, jsonify, render_template, request
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-
 
 app = Flask(__name__)
 darksky_key = "ff036cf3d154f83b55a5261f6a293109"
@@ -46,8 +46,8 @@ def get_weather(zip):
     get_weather = "https://api.darksky.net/forecast/" + darksky_key + "/" + str(loc_info["lat"]) + "," + str(loc_info["lon"])
     weather = requests.get(get_weather).json()
     weather = weather['currently']
-    # loc_comments = db.execute("SELECT * FROM tbl_comments WHERE zipcode=:zip", {"zip": zip}).fetchall()
-    loc_comments = db.execute("SELECT * FROM tbl_comments JOIN tbl_users ON tbl_comments.user_id=tbl_users.user_id WHERE zipcode=:zip ORDER BY tbl_comments.cmt_date DESC", {"zip": zip}).fetchall()
+    existing_checkin = db.execute("SELECT * FROM tbl_comments WHERE user_id=:user_id AND zipcode=:zip", {"user_id" :session["user_session"][0], "zip": zip}).rowcount
+    loc_comments = db.execute("SELECT * FROM tbl_comments JOIN tbl_users ON tbl_comments.user_id=tbl_users.user_id WHERE zipcode=:zip ORDER BY tbl_comments.comment_id DESC", {"zip": zip}).fetchall()
     # rv = "Zip: " + str(zip) + '\n'                  \
     #     + "Lat: " + str(lat_lon[0]) + '\n'              \
     #     + "Lon: " + str(lat_lon[1]) + '\n'              \
@@ -55,7 +55,9 @@ def get_weather(zip):
     #     + "Humidity: " + str(w['humidity']) + "\n"      \
     #     + "Wind Speed: " + str(w['windSpeed']) + "\n"   \
     #     + "Time: " + datetime.datetime.fromtimestamp(w['time']).strftime('%c')
-    return render_template("location.html", weather=weather, loc_info=loc_info, loc_comments=loc_comments)
+    return render_template("location.html", weather=weather, loc_info=loc_info, loc_comments=loc_comments, existing_checkin=existing_checkin)
+
+
 
 @app.route("/weather/<string:zip>", methods=["POST"])
 def add_comment(zip):
@@ -64,7 +66,7 @@ def add_comment(zip):
     VALUES (:cmt_date, :UID, :Zip, :Comment)",
         {"cmt_date":datetime.datetime.now(), "UID":session["user_session"][0], "Zip":zip, "Comment":new_comment})
     db.commit()
-    
+
     return get_weather(zip)
 
 # use python hashlib or passlib to encrypt users Password
@@ -166,6 +168,11 @@ def search_result():
         # multiple results found - show a list of results
         return render_template("search.html", message="found result for: " + search_value, result_count=result_count, search_results=search_results)
 
+
+# jinja filter to convert epoch time to human readable format
+@app.template_filter('format_time')
+def convert_epoch(epoch_time):
+    return datetime.datetime.fromtimestamp(epoch_time)
 
 
 

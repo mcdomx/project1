@@ -15,7 +15,7 @@
 
 <!-- CONTAINER BODY_TEXT -->
 
-<div class="container col-4" id="loginwindow">
+<div class="container col-4 border rounded" id="loginwindow">
   <h5>Search</h5>
   <p>enter zipcode, city or town</p>
 
@@ -30,22 +30,23 @@
 <p></p>
 
 <div class="container"> <!-- Location and Weather Container -->
-  <div class="row"> <!-- Location and Weather Row -->
+  <div class="row mx-auto"> <!-- Location and Weather Row -->
 
-    <div class="col-sm"> <!-- Location Info -->
-      City: {{ loc_info.city.capitalize() }}, {{ loc_info.state }} <br>
-      ZIP: {{ loc_info.zipcode }} <br>
+    <div class="col-5 border rounded mx-auto" id="locwindow"> <!-- Location Info -->
+      <strong>{{ loc_info.city.capitalize() }}, {{ loc_info.state }} {{ loc_info.zipcode }}</strong><br>
       Lat: {{ loc_info.lat }} <br>
       Lon: {{ loc_info.lon }} <br>
-      Population: {{ loc_info.population }}
+      Population: {{ loc_info.population }} <br>
+      Number of Check-ins: {{ loc_comments|length }} <br>
     </div> <!-- end location container -->
 
-    <div class="col-sm"> <!-- Weather Info -->
+    <div class="col-5 border rounded mx-auto" id="weatherwindow"> <!-- Weather Info -->
+      <!--  timestamp_to_time|datetimeformat('%B %d, %Y %I:%M:%S %Z') -->
+      Conditions as of: {{ weather.time|format_time }}<br>
       Summary: {{ weather.summary }} <br>
-      Icon: {{ weather.icon }} <br>
       Current Temp: {{ weather.temperature }} <br>
       Feels like: {{ weather.apparentTemperature }} <br>
-      Humidity: {{ weather.humidity }} <br>
+      Humidity: {{ '%d' | format(weather.humidity*100) }}%<br>
       Wind Speed: {{ weather.windSpeed }} <br>
       Cloud Cover: {{ weather.cloudCover }}
     </div> <!-- end weather container -->
@@ -64,17 +65,28 @@
           <th scope="col">Comment</th>
       </thead>
       <tbody>
-        <tr>
-          <td>add comment .... </td>
-          <td>{{ session["user_session"][1] }}</td>
-          <td>
-            <form action="{{ url_for('add_comment', zip=loc_info.zipcode) }}" method="post">
-                <div class="form-group row">
-                  <input type="text" class="form-row form-control-sm" name="new_comment" placeholder= "..  add your comment here ..">
-                  <button class="form-row btn btn-primary">Add</button>
-            </form>
-          </td>
-        </tr>
+
+        {% if existing_checkin==0 %}
+          <tr>
+            <td>Check-in ...   </td>
+            <td>{{ session["user_session"][1] }}</td>
+            <td>
+              <form action="{{ url_for('add_comment', zip=loc_info.zipcode) }}" method="post">
+
+                    <!-- <div class="form-group row"> -->
+                      <div class="input-group mb-3">
+                        <input type="text" class="form-control" name="new_comment" placeholder= "..  add your comment here ..">
+                        <div class="input-group-append">
+                          <button class="btn btn-info">Check-in</button>
+                        </div> <!-- end button -->
+                      </div> <!-- end input group -->
+                    <!-- </div> end row -->
+
+              </form>
+            </td>
+          </tr>
+        {% endif %}
+
         {% for comment in loc_comments %}
         <tr>
             <td>{{ comment.cmt_date }}</td>

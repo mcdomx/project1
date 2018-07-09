@@ -3,9 +3,19 @@ $lightblue: #ccddff;
 $darkblue: #001133;
 $platinum: #E2EFDE;
 
-$color_background: $darkblue;
-$color_font: $lightblue;
-$color_background_login: $platinum;
+/* Coolors Exported Palette - coolors.co/3d348b-7678ed-f7b801-f18701-f35b04 */
+/* RGB */
+$color1: #D7FDEC;
+$color2: #81C1A6;
+$color3: #B2E4DB;
+$color4: #E2D3C5;
+$color5: #BFB7CC;
+
+$color_background: $color2;
+$color_font: $color1;
+$color_background_login: $color2;
+$color_background_locinfo: $color4;
+$color_background_weather: $color5;
 //END SASS CSCC Color Varaibles
 
 
@@ -40,11 +50,24 @@ input[type=email], input[type=password], , input[type=text]{
  }
 
 #loginwindow {
+  padding: 10px 15px 5px; 
+  background-color: $color_background_login;
+}
+
+#searchwindow {
   padding: 15px 15px 15px 15px;
   background-color: $color_background_login;
 }
 
+#locwindow {
+  padding: 15px 15px 15px 15px;
+  background-color: $color_background_locinfo;
+}
 
+#weatherwindow {
+  padding: 15px 15px 15px 15px;
+  background-color: $color_background_weather;
+}
 
 
 a:hover {
