@@ -42,25 +42,24 @@ def index():
 # zipcode results
 @app.route("/weather/<string:zip>")
 def get_weather(zip):
-    lat_lon = db.execute("SELECT lat,lon FROM tbl_locations WHERE zipcode=:zip", {"zip": zip}).fetchone()
-    get_weather = "https://api.darksky.net/forecast/" + darksky_key + "/" + str(lat_lon[0]) + "," + str(lat_lon[1])
+    loc_info = db.execute("SELECT * FROM tbl_locations WHERE zipcode=:zip", {"zip": zip}).fetchone()
+    get_weather = "https://api.darksky.net/forecast/" + darksky_key + "/" + str(loc_info["lat"]) + "," + str(loc_info["lon"])
     weather = requests.get(get_weather).json()
-    w = weather['currently']
-    rv = "Zip: " + str(zip) + '\n'                  \
-        + "Lat: " + str(lat_lon[0]) + '\n'              \
-        + "Lon: " + str(lat_lon[1]) + '\n'              \
-        + "Temp: " + str(w['temperature']) + '\n'       \
-        + "Humidity: " + str(w['humidity']) + "\n"      \
-        + "Wind Speed: " + str(w['windSpeed']) + "\n"   \
-        + "Time: " + datetime.datetime.fromtimestamp(w['time']).strftime('%c')
-    return rv
+    weather = weather['currently']
+    loc_comments = db.execute("SELECT * FROM tbl_comments WHERE zipcode=:zip", {"zip": zip}).fetchone()
+    # rv = "Zip: " + str(zip) + '\n'                  \
+    #     + "Lat: " + str(lat_lon[0]) + '\n'              \
+    #     + "Lon: " + str(lat_lon[1]) + '\n'              \
+    #     + "Temp: " + str(w['temperature']) + '\n'       \
+    #     + "Humidity: " + str(w['humidity']) + "\n"      \
+    #     + "Wind Speed: " + str(w['windSpeed']) + "\n"   \
+    #     + "Time: " + datetime.datetime.fromtimestamp(w['time']).strftime('%c')
+    return render_template("location.html", weather=weather, loc_info=loc_info, loc_comments=loc_comments)
 
 # use python hashlib or passlib to encrypt users Password
 # sanitize password by escaping characters ' and "
 @app.route("/", methods=["POST"])
 def login():
-
-
     # get data from login form
     user_id = str(request.form.get("user_id"))
     pwd = str(request.form.get("pwd"))
@@ -138,15 +137,11 @@ def search_result():
     if search_value == "":
         return render_template("search.html", message="enter a zip or town to search for")
 
-    # result_rows = db.execute("SELECT * FROM tbl_locations WHERE zipcode=:zip", {"zip": search_value}).rowcount
-
-    # result_count = db.execute("SELECT * FROM tbl_locations WHERE zipcode LIKE :zip", {"zip": "%" + search_value + "%" }).rowcount
     search_results = db.execute("SELECT * FROM tbl_locations WHERE zipcode LIKE :zip", {"zip": "%" + search_value + "%" }).fetchall()
     result_count = len(search_results)
 
     # if no matches in the zip code field are found, check the city name
     if result_count==0:
-        # result_count = db.execute("SELECT * FROM tbl_locations WHERE city LIKE :city", {"city": "%" + search_value + "%" }).rowcount
         search_results = db.execute("SELECT * FROM tbl_locations WHERE city LIKE :city", {"city": "%" + search_value + "%" }).fetchall()
         result_count = len(search_results)
 

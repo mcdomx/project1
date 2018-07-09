@@ -37,12 +37,12 @@
           <th scope="col">Weather</th>
       </thead>
       <tbody>
-        {% for row in search_results %}
+        {% for location in search_results %}
         <tr>
-            <th scope="row">{{ row.city }}</th>
-            <td>{{ row.state }}</td>
-            <td>{{ row.zipcode }}</td>
-            <td><a href="{{ url_for('get_weather', zip=row.zipcode) }}" class="btn btn-info" role="button">Current Weather</a></td>
+            <th scope="row">{{ location.city }}</th>
+            <td>{{ location.state }}</td>
+            <td>{{ location.zipcode }}</td>
+            <td><a href="{{ url_for('get_weather', zip=location.zipcode) }}" class="btn btn-info" role="button">Current Weather</a></td>
         </tr>
         {% endfor %}
       </tbody>

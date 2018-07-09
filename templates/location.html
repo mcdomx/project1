@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    ZipWeather - Location
+{% endblock %}
+
+{% block body %}
+
+{% if message is defined() %}
+  <p></p>
+  <div class="alert alert-warning col-6 mx-auto" role="alert">
+    {{ message }}
+  </div>
+{% endif %}
+
+<!-- CONTAINER BODY_TEXT -->
+
+<div class="container col-4" id="loginwindow">
+  <h5>Search</h5>
+  <p>enter zipcode, city or town</p>
+
+    <form action="{{ url_for('search_result') }}" method="post">
+        <div class="form-group">
+            <input type="text" class="form-row col-auto form-control-sm" name="location_input" placeholder= "zip or city">
+            <button class="col-auto btn btn-primary">Search</button>
+          </div>
+      </form>
+</div> <!-- end CONTAINER -->
+
+
+<div class="container"> <!-- page body container -->
+
+  <div class"row"> <!-- Location and Weather Row -->
+
+    <div class="container col-6"> <!-- Location Info -->
+      City: {{ loc_info.city }}
+    </div> <!-- end location container -->
+
+    <div class="container col-6"> <!-- Weather Info -->
+      Current Temp: {{ weather.temperature }}
+      <a href="https://darksky.net/poweredby/">Powered by Dark Sky</a>
+    </div> <!-- end weather container -->
+
+  </div> <!-- end location and weather row -->
+
+  <div class"row"> <!-- Checkins Row -->
+    <div class="container col-12">
+      <p></p>
+      <table class="table table-striped">
+          <thead>
+              <th scope="col">Date</th>
+              <th scope="col">User</th>
+              <th scope="col">Comment</th>
+          </thead>
+          <tbody>
+            {% for location in search_results %}
+            <tr>
+                <th scope="row">{{ comment.user_id }}</th>
+                <td>{{ comment.user_id }}</td>
+                <td>{{ comment.comment }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+
+    </div> <!-- end checkins container -->
+
+  </div>  <!-- end checkins row -->
+
+
+<!-- end CONTAINER BODY_TEXT -->
+
+{% endblock %}
+
+<!-- weather
+loc_info
+loc_comments -->
