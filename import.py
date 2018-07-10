@@ -125,7 +125,7 @@ def import_zips(csv_file="zips.csv"):
     i = 1
 
     for zip, city, st, lat, lon, pop in reader:
-        if i>1:
+        if i>1: # skip first line since it is the heder information
             print(f"\rLoading record: {i}", end="")
             zip = str(zip)
             if len(zip) is 4:
