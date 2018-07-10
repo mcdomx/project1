@@ -10,7 +10,15 @@ jinja2 is used in conjunction with the Python code to present templates as web p
 
 Test user comments were posted to zipcode 02138 for demonstration and testing purposes.  
 
-A jinja2 filter was created to displpay the epoch time in user readable format.
+A jinja2 filter was created to display the epoch time in user readable format.
+
+###Running the application
+The application can be run by starting flask from the root project directory ("flask run") and then navigating to the link that flask returns after issuing the run command.
+
+If the application is not run from my environment, the following commands are necessary to setup necessary environment variables:
+export DATABASE_URL=postgres://vgltksvpsmnavf:5824aaa0eb811eb3aafefbdce73bd490e76ef577231e1b3632c23d64503f7539@ec2-107-20-193-202.compute-1.amazonaws.com:5432/d6avrg1hsn8aje
+export FLASK_APP=application.py
+export FLASK_DEBUG=1
 
 ###Registration
 The registration process is initiated with a link from the index page.  Once the user enters appropriate registration information, a confirmation message is presented to the user and the user is forced to login with their new credentials.  No "forgot password" process was implemented.  Successful registration updates the user table in the database with the new user and respective user data.
@@ -21,6 +29,8 @@ For this project, the registration validation is limited to completing all the f
 Keeping security in mind, the user id is not presented except when confirming a registration.  No other security measures were implemented.
 
 Once a user is logged in, the user's name is presented in the top right of the site along with a link to logout.
+
+Session variables are used to keep track of the logged in user's credentials and respective information.  The user will remain logged until the user explicitly logs out.  No auto-logout or timeout-logout is implemented.
 
 ###Search
 Searching for weather is only possible when a registered user is logged in.  Once logged in, the user is presented with a search page where a zip code or city can be entered.  A partial zip code or city name will return all the results that match the partial result.  If only one result is found, the user is directed directly to the weather page for the location; otherwise, the user is presented with a list of possible matches and must select from an item in the list.
