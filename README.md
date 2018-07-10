@@ -1,6 +1,40 @@
-# Project 1
-
+# Project 1 - ZipWeather
 Web Programming with Python and JavaScript
+
+##Overview
+In this project, I tried to keep the navigation and user interface as simple as possible.  My general approach was to disallow the user from doing anything that was not permitted to avoid the need to trap errors and present the user with a frustrating response.  For example, since users can only make one Check-In per location, if the user has a documented check-in, the user is not presented with an input box for a comment.
+
+A single application.py file is used for the Python support code.  An SCSS file is used for the CSS stylesheet.  Bootstrap is used for various formatting items.
+
+jinja2 is used in conjunction with the Python code to present templates as web pages.  A single layout page was used for all pages of the site to keep a consistent look and feel.
+
+Test user comments were posted to zipcode 02138 for demonstration and testing purposes.  
+
+A jinja2 filter was created to displpay the epoch time in user readable format.
+
+###Registration
+The registration process is initiated with a link from the index page.  Once the user enters appropriate registration information, a confirmation message is presented to the user and the user is forced to login with their new credentials.  No "forgot password" process was implemented.  Successful registration updates the user table in the database with the new user and respective user data.
+
+For this project, the registration validation is limited to completing all the field (email, Name, password, password confirmation) and that the password and the password confirmation match.  Bootstrap handles the email format validation and obscures the password fields.
+
+###Login/Logout
+Keeping security in mind, the user id is not presented except when confirming a registration.  No other security measures were implemented.
+
+Once a user is logged in, the user's name is presented in the top right of the site along with a link to logout.
+
+###Search
+Searching for weather is only possible when a registered user is logged in.  Once logged in, the user is presented with a search page where a zip code or city can be entered.  A partial zip code or city name will return all the results that match the partial result.  If only one result is found, the user is directed directly to the weather page for the location; otherwise, the user is presented with a list of possible matches and must select from an item in the list.
+
+###Location page
+Once on the location page, the user is presented with another search box to initiate another search as well as location data and the current weather.  The bottom section of the page includes checkins posted by registered users.  Since a user can only post a single checkin per location (zip code), if the user has already posted a checkin comment, then there is no possibility to enter another comment.
+
+###API
+As required, a simple API was implemented that returns the location information for a zipcode in JSON format.
+
+###Helper Functions
+In order to keep the main functions easy to follow, 5 helper functions are used to handle some basic support tasks.  These are listed at the bottom of the application.py file.  One of them is the jinja2 custom filter to display epoch time in readable format.
+
+
 
 ##Requirements
 
@@ -29,7 +63,7 @@ Web Programming with Python and JavaScript
 - [X] On your location page, you should also display information about the current weather, displaying minimally the time of the weather report, the textual weather summary (e.g. “Clear”), temperature, dew point, and humidity (as a percentage). You can display more information if you wish.
 
 ###API Access:
-- [] If users make a GET request to your website’s /api/<zip> route, where <zip> is a ZIP code, your website should return a JSON response containing (at a minimum) the name of the location, its state, latitude, longitude, ZIP code, population, and the number of user check-ins to that location. The resulting JSON should follow the format; the order of the keys is not important, so long as they are all present:
+- [X] If users make a GET request to your website’s /api/<zip> route, where <zip> is a ZIP code, your website should return a JSON response containing (at a minimum) the name of the location, its state, latitude, longitude, ZIP code, population, and the number of user check-ins to that location. The resulting JSON should follow the format; the order of the keys is not important, so long as they are all present:
 {
     "place_name": "Cambridge",
     "state": "MA",
