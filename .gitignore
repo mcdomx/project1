@@ -1,1 +1,4 @@
 .DS_Store
+heroku_darksky_credentials.txt
+database_setup.sql
+project1-requirements.pdf
