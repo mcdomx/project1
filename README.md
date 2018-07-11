@@ -69,6 +69,8 @@ In order to keep the main functions easy to follow, several helper functions are
 ###Import:
 - [X] Provided for you in this project is a file called zips.csv, which is a file in CSV format of all ZIP codes in the United States that have a population of 15,000 or more as well as some other information such as location names and short codes, latitude and longitude, and population. In a Python file called import.py separate from your web application, write a program that will take the information in this CSV and import it into your PostgreSQL database. You will first need to decide what table(s) to create, what columns those tables should have, and how they should relate to one another. Run this program by running python import.py to import the books into your database, and submit this program with the rest of your project code.
 
+The file d6avrg1hsn8aje.sql includes the sql table configuration from Adminer.
+
 ###Search:
 - [X] Once a user has logged in, they should be taken to a page where they can search for a location. Users should be able to type a ZIP code or the name of a city or town. After performing the search, your website should display a list of possible matching results, or some sort of message if there were no matches at all. If the user typed in only partial information, your search page should find matches for those as well!
 
