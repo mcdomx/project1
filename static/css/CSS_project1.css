@@ -15,6 +15,19 @@ header {
   height: 3vh;
 }
 
+tbody {
+  padding-bottom: 6vh;
+}
+
+a:hover {
+  color: orange;
+  text-decoration: none;
+}
+
+p {
+  text-align: justify;
+}
+
 input[type=email], input[type=password], input[type=text] {
   margin-bottom: 5px;
 }
@@ -37,15 +50,6 @@ input[type=email], input[type=password], input[type=text] {
 #weatherwindow {
   padding: 15px 15px 15px 15px;
   background-color: #BFB7CC;
-}
-
-a:hover {
-  color: orange;
-  text-decoration: none;
-}
-
-p {
-  text-align: justify;
 }
 
 /*# sourceMappingURL=CSS_project1.css.map */

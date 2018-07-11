@@ -4,6 +4,8 @@ Web Programming with Python and JavaScript
 ##Overview
 In this project, I tried to keep the navigation and user interface as simple as possible.  My general approach was to disallow the user from doing anything that was not permitted to avoid the need to trap errors and present the user with a frustrating response.  For example, since users can only make one Check-In per location, if the user has a documented check-in, the user is not presented with an input box for a comment.
 
+Import.py is a standalone program that will setup and load tables necessary for the project.  This includes not only the locations table, but also test data for the comments and the users tables.  When executing this project from a Python prompt, the user is warned that all existing data will be erased.  Once this is confirmed, the user is asked if the location file should also be included.  If No is selected, only the comments and users tables will be updated.  This is for development purposes within this project.  Once the zipcode data was loaded, there was little need to reload it again and took too long to include in each database update.  Because of this functionality and the inclusion of table creation, there are many functions in import.py and the file is longer than if only the requirement would have been met.
+
 A single application.py file is used for the Python support code.  An SCSS file is used for the CSS stylesheet.  Bootstrap is used for various formatting items.
 
 jinja2 is used in conjunction with the Python code to present templates as web pages.  A single layout page was used for all pages of the site to keep a consistent look and feel.
@@ -20,33 +22,40 @@ export DATABASE_URL=postgres://vgltksvpsmnavf:5824aaa0eb811eb3aafefbdce73bd490e7
 export FLASK_APP=application.py
 export FLASK_DEBUG=1
 
+These are included in the env_variables.sh script which can be run from a termial prompt:
+Terminal prompt> bash env_variables.sh
+
+
 ###Registration
 The registration process is initiated with a link from the index page.  Once the user enters appropriate registration information, a confirmation message is presented to the user and the user is forced to login with their new credentials.  No "forgot password" process was implemented.  Successful registration updates the user table in the database with the new user and respective user data.
 
-For this project, the registration validation is limited to completing all the field (email, Name, password, password confirmation) and that the password and the password confirmation match.  Bootstrap handles the email format validation and obscures the password fields.
+For this project, the registration validation is limited to completing all the field (email, Name, password, password confirmation) and that the password and the password confirmation match.  Bootstrap handles the email format validation and obscures the password fields.  A name is required so that the user id is not displayed when the user is browsing the site.
 
 ###Login/Logout
 Keeping security in mind, the user id is not presented except when confirming a registration.  No other security measures were implemented.
 
 Once a user is logged in, the user's name is presented in the top right of the site along with a link to logout.
 
-Session variables are used to keep track of the logged in user's credentials and respective information.  The user will remain logged until the user explicitly logs out.  No auto-logout or timeout-logout is implemented.
+Session variables are used to keep track of the logged in user's credentials and respective information.  The user will remain logged in until the user explicitly logs out.  No auto-logout or timeout-logout is implemented.
 
 ###Search
 Searching for weather is only possible when a registered user is logged in.  Once logged in, the user is presented with a search page where a zip code or city can be entered.  A partial zip code or city name will return all the results that match the partial result.  If only one result is found, the user is directed directly to the weather page for the location; otherwise, the user is presented with a list of possible matches and must select from an item in the list.
 
+####Direct Search via URL
+Direct HTML entry is supported by extending the root site with weather/<zipcode>.  No partial search functionality is supported using this direct entry method.  If the zip code is not found, an error message is presented and the user can enter a zip code directly in a search box (which supports partial data entry).  The user must be logged in to do a direct URL search.  If not logged in, the user is directed to a login screen and presented with an error message.
+
 ###Location page
-Once on the location page, the user is presented with another search box to initiate another search as well as location data and the current weather.  The bottom section of the page includes checkins posted by registered users.  Since a user can only post a single checkin per location (zip code), if the user has already posted a checkin comment, then there is no possibility to enter another comment.
+Once on the location page, the user is presented with location data and weather as well as a search box to initiate another search.  The bottom section of the page includes checkins posted by registered users.  Since a user can only post a single checkin per zipcode, if the user has already posted a checkin comment, then there is no possibility to enter another comment.
 
 ###API
-As required, a simple API was implemented that returns the location information for a zipcode in JSON format.
+As required, a simple API was implemented that returns the location information for a zipcode in JSON format.  The API is accessed from the root URL + /API/<zipcode>.
 
 ###Helper Functions
-In order to keep the main functions easy to follow, 5 helper functions are used to handle some basic support tasks.  These are listed at the bottom of the application.py file.  One of them is the jinja2 custom filter to display epoch time in readable format.
+In order to keep the main functions easy to follow, several helper functions are used to handle some basic support tasks.  These are listed at the bottom of the application.py file.  One of them is the jinja2 custom filter to display epoch time in readable format.
 
 
 
-##Requirements
+##Project Requirements
 
 ###Registration:
 - [X] Users should be able to register for your website, providing (at minimum) a username and password.
@@ -86,6 +95,6 @@ In order to keep the main functions easy to follow, 5 helper functions are used 
 If the requested ZIP code isn’t in your database, your website should return a 404 error.
 
 ###README.md
-In README.md, include a short write-up describing your project, what’s contained in each file, and (optionally) any other additional information the staff should know about your project.
+- [X] In README.md, include a short write-up describing your project, what’s contained in each file, and (optionally) any other additional information the staff should know about your project.
 If you’ve added any Python packages that need to be installed in order to run your web application, be sure to add them to requirements.txt!
 Beyond these requirements, the design, look, and feel of the website are up to you! You’re also welcome to add additional features to your website, so long as you meet the requirements laid out in the above specification!
