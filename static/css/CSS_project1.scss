@@ -1,8 +1,3 @@
-//SASS SCSS Color Variables
-$lightblue: #ccddff;
-$darkblue: #001133;
-$platinum: #E2EFDE;
-
 /* Coolors Exported Palette - coolors.co/3d348b-7678ed-f7b801-f18701-f35b04 */
 /* RGB */
 $color1: #D7FDEC;
@@ -18,9 +13,7 @@ $color_background_locinfo: $color4;
 $color_background_weather: $color5;
 //END SASS CSCC Color Varaibles
 
-
 //HEADER FOOTER Inheritance
-
 %header_footer_size {
   padding: 15px 15px 50px 15px;
   color: $color_font;
@@ -37,11 +30,19 @@ header {
   font-size: 1.5em;
   height: 3vh;
 }
-
 //END HEADER AND FOOTER
 
-.container {
+tbody {
+  padding-bottom: 6vh;
+}
 
+a:hover {
+  color: orange;
+  text-decoration: none;
+}
+
+p {
+  text-align: justify;
 }
 
 //Creates margins between specifc form elements
@@ -49,8 +50,9 @@ input[type=email], input[type=password], , input[type=text]{
   margin-bottom: 5px;
  }
 
+
 #loginwindow {
-  padding: 10px 15px 5px; 
+  padding: 10px 15px 5px;
   background-color: $color_background_login;
 }
 
@@ -67,15 +69,4 @@ input[type=email], input[type=password], , input[type=text]{
 #weatherwindow {
   padding: 15px 15px 15px 15px;
   background-color: $color_background_weather;
-}
-
-
-a:hover {
-  color: orange;
-  text-decoration: none;
-}
-
-
-p {
-  text-align: justify;
 }
