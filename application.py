@@ -41,7 +41,8 @@ def index():
     if session.get("user_session") is None:
         return render_template("index.html")
     else:
-        return render_template("search.html", message="search for weather", user_session=session["user_session"])
+        return render_template("search.html", message="search for weather", \
+                                        user_session=session["user_session"])
 
 
 # get login results
@@ -54,25 +55,34 @@ def login():
     # ensure both user_id and pw were provided
     if user_id=="" or pwd=="":
         #TODO display message
-        return render_template("index.html", message="enter a user name and password", user_id=user_id, pwd=pwd)
+        return render_template("index.html", \
+                                message="enter a user name and password", \
+                                user_id=user_id, \
+                                pwd=pwd)
 
 
     # check to see if supplied user_id exists
-    if db.execute("SELECT * FROM tbl_users WHERE user_id=:id", {"id": user_id}).rowcount is 0:
+    if db.execute("SELECT * FROM tbl_users \
+                            WHERE user_id=:id", {"id": user_id}).rowcount is 0:
         # no user exists
         return render_template("index.html", message="No user: " + user_id)
     else:
         # user exists - check passworsd
-        user_credentials = db.execute("SELECT * FROM tbl_users WHERE user_id=:id", {"id": user_id}).fetchone()
+        user_credentials = db.execute("SELECT * FROM tbl_users \
+                                        WHERE user_id=:id", \
+                                        {"id": user_id}).fetchone()
+
         if pwd == user_credentials[2]:
             # password matches - login user
             if session.get("user_session") is None:
                 session["user_session"] = []
             session["user_session"].append(user_credentials[0])
             session["user_session"].append(user_credentials[1])
-            return render_template("search.html", message="login successful", user_session=session["user_session"])
+            return render_template("search.html", message="login successful", \
+                                        user_session=session["user_session"])
         else: # if password is not correct
-            return render_template("index.html", message="password incorrect", user_id=user_id, pwd=pwd)
+            return render_template("index.html", message="password incorrect", \
+                                                user_id=user_id, pwd=pwd)
 
 
 # LOGOUT
@@ -103,13 +113,16 @@ def create_user():
     if user_id=="" or user_name=="" or pwd=="" or pwd_conf=="":
         message = "Fill in all fields"
         return render_template("register.html", message=message)
+
     elif pwd != pwd_conf:
         #make sure that passwords match
         message = "Password does not match."
         return render_template("register.html", message=message)
+
     else: # data is complete
         add_user(user_id, user_name, pwd)
-        return render_template("registration_success.html", user_id=user_id, user_name=user_name)
+        return render_template("registration_success.html", user_id=user_id, \
+                                                            user_name=user_name)
 
 
 # DISPLAY SEARCH RESULTS
@@ -118,21 +131,33 @@ def search_result():
     search_value = str(request.form.get("location_input")).upper()
 
     if search_value == "":
-        return render_template("search.html", message="enter a zip or town to search for")
+        return render_template("search.html", \
+                                    message="enter a zip or town to search for")
 
     # Check for partial input of either a city or a zipcode
-    search_results = db.execute("SELECT * FROM tbl_locations WHERE city LIKE :city OR zipcode LIKE :zip", {"city": "%" + search_value + "%" , "zip": "%" + search_value + "%"}).fetchall()
+    search_results = db.execute("SELECT * FROM tbl_locations \
+                                WHERE city LIKE :city OR zipcode LIKE :zip", \
+                                {"city": "%" + search_value + "%" , \
+                                "zip": "%" + search_value + "%"}).fetchall()
+
     result_count = len(search_results)
 
     if result_count==0:
         # no results found
-        return render_template("search.html", message="no results found for: " + search_value, result_count=result_count, search_results=search_results)
+        return render_template("search.html", \
+                            message="no results found for: " + search_value, \
+                            result_count=result_count, \
+                            search_results=search_results)
+
     elif result_count==1:
         # If 1 result found, go straight to weather page
         return get_weather(search_results[0]["zipcode"])
     else:
         # multiple results found, show a list of results
-        return render_template("search.html", message="found result for: " + search_value, result_count=result_count, search_results=search_results)
+        return render_template("search.html", message="found result for: " + \
+                                            search_value, \
+                                            result_count=result_count, \
+                                            search_results=search_results)
 
 
 # DISPLAY LOCATION INFORMATION
@@ -140,31 +165,38 @@ def search_result():
 def get_weather(zip):
     # check to see that user is logged in - redirect to login page with message if not logged in
     if session.get("user_session") is None:
-        return render_template("index.html", message="Must be logged in to see location information and weather.  Please log in.")
+        return render_template("index.html", \
+                                        message="Must be logged in to see \
+                                        location information and weather.  \
+                                        Please log in.")
 
     # get location information
     loc_info = get_location_info(zip)
 
     # if no such zip code exists, post error and revert to search
     if loc_info == None:
-        return render_template("search.html", message="no location results found for: " + zip)
+        return render_template("search.html", \
+                                message="no location results found for: " + zip)
 
     # Get weather data from Darksky for respectve zipcode
     weather = get_current_weather(zip)
 
     # if Darksky data doesn't exist, post error and revert to search
     if weather == None:
-        return render_template("search.html", message="no weather results found for: " + zip)
+        return render_template("search.html", \
+                                message="no weather results found for: " + zip)
 
     # Check to see if user has already posted a checkin comment.
     existing_checkin = checkin_exists(session["user_session"][0], zip)
 
     # Retireve checkin comments for the respective zipcode
-    # loc_comments = db.execute("SELECT * FROM tbl_comments JOIN tbl_users ON tbl_comments.user_id=tbl_users.user_id WHERE zipcode=:zip ORDER BY tbl_comments.comment_id DESC", {"zip": zip}).fetchall()
     loc_comments = get_location_comments(zip)
 
     # Return location page with respective location and weather data
-    return render_template("location.html", weather=weather, loc_info=loc_info, loc_comments=loc_comments, existing_checkin=existing_checkin)
+    return render_template("location.html", weather=weather, \
+                                            loc_info=loc_info, \
+                                            loc_comments=loc_comments, \
+                                            existing_checkin=existing_checkin)
 
 
 # add a comment to a checking on a location page
@@ -177,7 +209,8 @@ def add_comment(zip):
     # insert comment into database
     db.execute("INSERT INTO tbl_comments (cmt_date, user_id, zipcode, comment) \
     VALUES (:cmt_date, :UID, :Zip, :Comment)",
-        {"cmt_date":datetime.datetime.now(), "UID":session["user_session"][0], "Zip":zip, "Comment":new_comment})
+        {"cmt_date":datetime.datetime.now(), "UID":session["user_session"][0], \
+                                            "Zip":zip, "Comment":new_comment})
     db.commit()
 
     # show updated location page with new comment
@@ -186,7 +219,7 @@ def add_comment(zip):
 
 
 # API SUPPORT
-# Return JSON formatted result of location statistics for zipcode supplied as argument
+# Return JSON formatted result of location info for zipcode supplied as argument
 # -------------------------------------------------------------
 @app.route("/api/<string:zip>", methods=["GET"])
 def zipweather_api(zip):
@@ -216,7 +249,8 @@ def zipweather_api(zip):
 # Check to see if zipcode exists in Database
 # Return True if it exists. Return Flase if it does not.
 def check_zipcode(zip):
-        search_results = db.execute("SELECT * FROM tbl_locations WHERE zipcode=:zip", {"zip": zip }).fetchone()
+        search_results = db.execute("SELECT * FROM tbl_locations \
+                                WHERE zipcode=:zip", {"zip": zip }).fetchone()
         if search_results == None:
             return False
         else:
@@ -224,26 +258,40 @@ def check_zipcode(zip):
 
 # Return the current weather in JSON format for supplied zip code argument
 def get_current_weather(zip):
-    loc_info = db.execute("SELECT * FROM tbl_locations WHERE zipcode=:zip", {"zip": zip}).fetchone()
-    get_weather = "https://api.darksky.net/forecast/" + darksky_key + "/" + str(loc_info["lat"]) + "," + str(loc_info["lon"])
+    loc_info = db.execute("SELECT * FROM tbl_locations \
+                            WHERE zipcode=:zip", {"zip": zip}).fetchone()
+
+    get_weather = "https://api.darksky.net/forecast/" + darksky_key + "/" + \
+                            str(loc_info["lat"]) + "," + str(loc_info["lon"])
+
     weather = requests.get(get_weather).json()
     return weather['currently']
 
 # Return row from table of locations of data for a zipcode supplied as an argument.
 def get_location_info(zip):
-    return db.execute("SELECT * FROM tbl_locations WHERE zipcode=:zip", {"zip": zip}).fetchone()
+    return db.execute("SELECT * FROM tbl_locations \
+                                WHERE zipcode=:zip", {"zip": zip}).fetchone()
 
 # Return the checkin comments for a supplied zipcode
 def get_location_comments(zip):
-    return db.execute("SELECT * FROM tbl_comments JOIN tbl_users ON tbl_comments.user_id=tbl_users.user_id WHERE zipcode=:zip ORDER BY tbl_comments.comment_id DESC", {"zip": zip}).fetchall()
+    return db.execute("SELECT * FROM tbl_comments \
+                        JOIN tbl_users ON tbl_comments.user_id=tbl_users.user_id \
+                        WHERE zipcode=:zip \
+                        ORDER BY tbl_comments.comment_id DESC", \
+                        {"zip": zip}).fetchall()
 
 # Check to see if user has already posted a checkin comment.
 def checkin_exists(user_id, zip):
-    return db.execute("SELECT * FROM tbl_comments WHERE user_id=:user_id AND zipcode=:zip", {"user_id" :session["user_session"][0], "zip": zip}).rowcount
+    return db.execute("SELECT * FROM tbl_comments \
+                        WHERE user_id=:user_id AND zipcode=:zip", \
+                        {"user_id" :session["user_session"][0], "zip": zip}).rowcount
 
 # Count the number of checkins for a zipcode
 def count_checkins(zip):
-    search_results = db.execute("SELECT * FROM tbl_locations WHERE zipcode LIKE :zip", {"zip": "%" + zip + "%" }).fetchall()
+    search_results = db.execute("SELECT * FROM tbl_locations \
+                                WHERE zipcode LIKE :zip", \
+                                {"zip": "%" + zip + "%" }).fetchall()
+
     return len(search_results)
 
 # add user into database
