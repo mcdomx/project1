@@ -147,10 +147,14 @@ def get_weather(zip):
 
     # if no such zip code exists, post error and revert to search
     if loc_info == None:
-        return render_template("search.html", message="no results found for: " + zip)
+        return render_template("search.html", message="no location results found for: " + zip)
 
     # Get weather data from Darksky for respectve zipcode
     weather = get_current_weather(zip)
+
+    # if no such zip code exists, post error and revert to search
+    if weather == None:
+        return render_template("search.html", message="no weather results found for: " + zip)
 
     # Check to see if user has already posted a checkin comment.
     existing_checkin = checkin_exists(session["user_session"][0], zip)
