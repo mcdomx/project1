@@ -152,7 +152,7 @@ def get_weather(zip):
     # Get weather data from Darksky for respectve zipcode
     weather = get_current_weather(zip)
 
-    # if no such zip code exists, post error and revert to search
+    # if Darksky data doesn't exist, post error and revert to search
     if weather == None:
         return render_template("search.html", message="no weather results found for: " + zip)
 
